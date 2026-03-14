@@ -1,62 +1,40 @@
-import { useReducer, useState, useMemo, useCallback } from "react";
-import useFetchPhotos from "../hooks/useFetchPhotos";
-import { favouritesReducer, initialState } from "../reducer/favouritesReducer";
-import PhotoCard from "./PhotoCard";
+import type { Photo } from "../types/photo"
 
-export default function Gallery() {
-  const { photos, loading, error } = useFetchPhotos();
+interface Props {
+  photo: Photo
+  isFav: boolean
+  toggleFav: (id: string) => void
+}
 
-  const [search, setSearch] = useState("");
-
-  const [favourites, dispatch] = useReducer(
-    favouritesReducer,
-    initialState
-  );
-
-  const handleSearch = useCallback((e) => {
-    setSearch(e.target.value);
-  }, []);
-
-  const filteredPhotos = useMemo(() => {
-    return photos.filter(photo =>
-      photo.author.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [photos, search]);
-
-  const toggleFav = (id) => {
-    dispatch({ type: "TOGGLE_FAVOURITE", payload: id });
-  };
-
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+export default function PhotoCard({
+  photo,
+  isFav,
+  toggleFav
+}: Props) {
 
   return (
-    <div className="p-6">
+    <div className="border rounded-lg overflow-hidden shadow">
 
-      <input
-        type="text"
-        placeholder="Search by author..."
-        value={search}
-        onChange={handleSearch}
-        className="border p-2 w-full mb-6"
+      <img
+        src={photo.download_url}
+        alt={photo.author}
+        className="w-full h-60 object-cover"
       />
 
-      <div className="grid gap-6
-        grid-cols-1
-        sm:grid-cols-2
-        lg:grid-cols-4">
+      <div className="flex justify-between items-center p-3">
 
-        {filteredPhotos.map(photo => (
-          <PhotoCard
-            key={photo.id}
-            photo={photo}
-            isFav={favourites.includes(photo.id)}
-            toggleFav={toggleFav}
-          />
-        ))}
+        <p className="text-sm font-medium">
+          {photo.author}
+        </p>
+
+        <button
+          onClick={() => toggleFav(photo.id)}
+          className="text-xl"
+        >
+          {isFav ? "❤️" : "🤍"}
+        </button>
 
       </div>
     </div>
-  );
+  )
 }
