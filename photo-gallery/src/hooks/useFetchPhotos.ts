@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Photo } from "../types/photo"
+import type { Photo } from "../types/photo"
 
 const API_URL = "https://picsum.photos/v2/list?limit=30"
 
